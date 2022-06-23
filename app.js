@@ -1,13 +1,19 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const customerRouter = require('./src/routes/customers');
 
-const eventsRouter = require('./routes/events');
+// Configure App
+app.use(express.json());
 
 // Register Routes
-app.use('/events', eventsRouter);
+app.use('v1/customers', customerRouter);
+/// Basic catch-all for bad routes
+app.use((req, res) => {
+  res.status(404).send('Route not found.');
+});
 
-//Launch listening server on port 3000
+// Launch on specified port
 app.listen(port, () => {
-  console.log('app listening on port ${port}!');
+  console.log(`app listening on port ${port}!`);
 });
