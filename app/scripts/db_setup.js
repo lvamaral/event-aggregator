@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const csv = require('fast-csv');
 const format = require('pg-format');
+
 const { client } = require('../db');
 
 const migrate = async () => {
@@ -35,6 +36,7 @@ const migrate = async () => {
       }
 
       await client.query("COMMIT");
+      await client.end();
     });
 }
 

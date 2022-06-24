@@ -21,6 +21,9 @@ services:
   migration:
     image: node:16.15-alpine3.14
     command: sh -c "npm run migrate"
+    working_dir: /app
+    volumes:
+      - ./:/app
     depends_on:
       - questdb
       - app
