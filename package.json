@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "express": "^4.18.1",
-    "express-validator": "^6.14.2"
+    "fast-csv": "^4.3.6",
+    "pg": "^8.7.3",
+    "pg-format": "^1.0.4"
   },
   "name": "event-aggregator",
   "version": "1.0.0",
@@ -11,6 +13,7 @@
   },
   "scripts": {
     "start": "node app.js",
+    "migrate": "node ./app/scripts/db_setup.js",
     "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,20 +1,26 @@
- version: "3.7"
+version: "3.7"
 
- services:
-  app:
-    image: node:16.15-alpine3.14
-    command: sh -c "npm install && npm run start"
-    ports:
-      - 3000:3000
-    working_dir: /app
-    volumes:
-      - ./:/app
+services:
   questdb:
     image: questdb/questdb
-    container_name: docker_questdb
     restart: always
     ports:
       - "8812:8812"
       - "9000:9000"
       - "9009:9009"
       - "9003:9003"
+  app:
+    image: node:16.15-alpine3.14
+    container_name: app
+    command: sh -c "npm install && npm start"
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    volumes:
+      - ./:/app
+  migration:
+    image: node:16.15-alpine3.14
+    command: sh -c "npm run migrate"
+    depends_on:
+      - questdb
+      - app

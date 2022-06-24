@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
-const port = 3000;
 const customerRouter = require('./app/routes/customers');
+
+const PORT = 3000;
+const HOST = '0.0.0.0';
 
 // Configure App
 app.use(express.json());
@@ -14,6 +16,6 @@ app.use((req, res) => {
 });
 
 // Launch on specified port
-app.listen(port, () => {
-  console.log(`app listening on port ${port}!`);
+app.listen(PORT, HOST, () => {
+  console.log(`Running on http://${HOST}:${PORT}`);
 });
