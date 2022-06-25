@@ -20,7 +20,6 @@ router.get('/:id/total_events', async (req, res) => {
       ending_before ? ending_before : '3000-01-01 00:00:00' // Date defaults in case none are passed in to simplify query logic
     ]
   }
-  console.log(query);
 
   let dbResponse;
   try {

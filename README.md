@@ -35,7 +35,7 @@ The service is built as a Node app using the Express framework, powered by a tim
 
 ### App Structure and Framework
 
-Node and Express were chosen due to familiarity and ease of setup. For simplicity, the folder structure is kept pretty minimal and is based around the `routes` we use (in this case, just `/customers`). For a more complex application, we could include concepts like `services`, `models`, and `controllers` to keep the application more modular, but the current structure seems sufficient for our use case. An additional `tests/` modules provides basic unit tests.
+Node and Express were chosen due to familiarity and ease of setup. For simplicity, the folder structure is kept pretty minimal and is based around the `routes` we use (in this case, just `/customers`). For a more complex application, we could include concepts like `services`, `models`, and `controllers` to keep the application more modular, but the current structure seems sufficient for our use case. An additional `tests/` module is included to specify where our application's tests would go (see Limitations & Extensions).
 
 ### API Design
 
@@ -74,7 +74,7 @@ It is worth noting that in populating the DB we are making certain assumptions a
 **Alternatives Considered**
 
 - Pre Aggregated Views:
-    - In case our aggregation parameters were **pre-determined**, such as having uniform hourly buckets (ex: 1-2, 2-5, etc.), and approach to speed up our queries would have been to pre-aggregate the data. Assuming 24 time buckets per day, this would mean that we would need to keep track of up to `24 * customer_#` rows of data per day. This could exist in a relational or non relational database. The advantage of this approach is that aggregation could be done very quickly (since the data is pre-aggregated). The disadvantage is that in the case we need time periods in between buckets (which we do) this approach becomes more complicated, and we still need to store the “raw” event data since we can’t rely purely on the aggregates. This approach was therefore discarded.
+    - In case our aggregation parameters were **pre-determined**, such as having uniform hourly buckets (ex: 1-2, 2-5, etc.), an approach to speed up our queries would have been to pre-aggregate the data. Assuming 24 time buckets per day, this would mean that we would need to keep track of up to `24 * customer_#` rows of data per day. This could exist in a relational or non relational database. The advantage of this approach is that aggregation could be done very quickly (since the data is pre-aggregated). The disadvantage is that in the case we need time periods in between buckets (which we do) this approach becomes more complicated, and we still need to store the “raw” event data since we can’t rely purely on the aggregates. This approach was therefore discarded.
 
 - Third Party Service:
     - A service like Metronome purpose built for something like this could save a lot of development time. In a real production setting, this option would be considered more seriously and evaluated on the cost of the service & implementation vs. the other alternatives considered. For the purposes of this excercise, this option was discarded to build something from the ground-up.
@@ -82,3 +82,5 @@ It is worth noting that in populating the DB we are making certain assumptions a
 ## Limitations & Extensions
 
 Due to the time constraints, the application is pretty limited in scope. We can’t add events or remove events outside of modifying the `events.csv` and resetting the DB, re-importing everything. Adding this functionality would be reasonably simple: we could add a `/events` route with paths for adding and removing events.
+
+There are also no tests included. Given more time, a real application would include at least integration and unit tests. A way to approach this would be to build specific containers (server and DB) for tests, populate it with seed data, and run tests in that environment, separate from the staging or production environments.
