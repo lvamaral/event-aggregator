@@ -69,15 +69,18 @@ A `migrate` command is provided (executed with `npm run migrate`) to populate th
 
 It is worth noting that in populating the DB we are making certain assumptions about the data:
 
-- We are assuming that the data is correct. Even if some fields are not formatted consistently (ex: if we have some variation on what the `transaction_id` format looks like), we choose to still ingest and save the data rather than lose it. On a production application, we could implement some sort of alerting when importing fields that don’t follow a pre-defined schema so that an engineer can investigate/clean up the data after the fact. In general, we would rather not lose any data by not saving it, though we would definitely want to investigate if data was coming in in an unexpected format, as that could suggest some upstream issues.
+- We are assuming that the data is correct. Even if some fields are not formatted consistently (ex: if we have some variation on what the `transaction_id` format looks like), we choose to still ingest and save the data rather than lose it. On a production application, we could implement some sort of alerting when importing fields that don’t follow a pre-defined schema so that an engineer can investigate/clean up the data after the fact. In general, we would rather not lose any data by not saving it, though we would definitely want to investigate if data was coming in in an unexpected format as that could suggest some upstream issues.
 
 **Alternatives Considered**
 
 - Pre Aggregated Views:
-    - In case our aggregation parameters were **pre-determined**, such as having uniform hourly buckets (ex: 1-2, 2-5, etc.), an approach to speed up our queries would have been to pre-aggregate the data. Assuming 24 time buckets per day, this would mean that we would need to keep track of up to `24 * customer_#` rows of data per day. This could exist in a relational or non relational database. The advantage of this approach is that aggregation could be done very quickly (since the data is pre-aggregated). The disadvantage is that in the case we need time periods in between buckets (which we do) this approach becomes more complicated, and we still need to store the “raw” event data since we can’t rely purely on the aggregates. This approach was therefore discarded.
+  - In case our aggregation parameters were **pre-determined**, such as having uniform hourly buckets (ex: 1-2, 2-5, etc.), an approach to speed up our queries would have been to pre-aggregate the data. Assuming 24 time buckets per day, this would mean that we would need to keep track of up to `24 * customer_#` rows of data per day. This could exist in a relational or non relational database. The advantage of this approach is that aggregation could be done very quickly (since the data is pre-aggregated). The disadvantage is that in the case we need time periods in between buckets (which we do) this approach becomes more complicated, and we still need to store the “raw” event data since we can’t rely purely on the aggregates. This approach was therefore discarded.
+
+- Tradional Relational DB (PostgreSQL, MySQL):
+  - We could have ingested the data into a tradional relational DB instead of using a time series database. With the right indexes on the timestamp column, we could still achieve good performance, especially for the relatively small amount of data we have. However, since our use case was specifically to aggregate something over time, the more specialized QuestDB was deemed more appropriate.
 
 - Third Party Service:
-    - A service like Metronome purpose built for something like this could save a lot of development time. In a real production setting, this option would be considered more seriously and evaluated on the cost of the service & implementation vs. the other alternatives considered. For the purposes of this excercise, this option was discarded to build something from the ground-up.
+  - A service like Metronome purpose built for something like this could save a lot of development time. In a real production setting, this option would be considered more seriously and evaluated on the cost of the service & implementation vs. the other alternatives considered. For the purposes of this excercise, this option was discarded to build something from the ground-up.
 
 ## Limitations & Extensions
 
