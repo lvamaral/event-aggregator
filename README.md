@@ -18,14 +18,13 @@ We expect this exercise to take 1-3 hours.
 
 ## Setup
 
-### Pre-reqs
-0. To run this application, please install [docker compose](https://docs.docker.com/compose/install/) if needed.
+0. Please install [docker compose](https://docs.docker.com/compose/install/) if needed.
 
 1. To run this application, simply run `docker-compose up -d`. This will start 3 containers: the QuestDB database, the Node Express server, and a Node process to migrate the events data into the DB (please give it a few seconds to finish populating before sending any http requests!)
-2. To send requests, use `curl` or an API client and the route:
-```
-http://localhost:3000/v1/customers/{customer_id}/total_events?starting_at={start_ts}&ending_before={end_ts}
-```
+2. To send requests, use `curl` or an API client (easier) and the route:
+  ```
+  http://localhost:3000/v1/customers/{customer_id}/total_events?starting_at={start_ts}&ending_before={end_ts}
+  ```
   - Ex curl request:
     ```
     curl http://localhost:3000/v1/customers/b4f9279a0196e40632e947dd1a88e857/total_events\?starting_at\='2021-03-01'\&ending_before\='2021-03-02'
@@ -35,7 +34,7 @@ http://localhost:3000/v1/customers/{customer_id}/total_events?starting_at={start
 
 ## Design Overview
 
-The service is built as a Node app using the Express framework, powered by a time series Database called QuestDB. It is Dockerized for convenience, using Docker Compose to manage the different containers. A simple route is exposed to allow for event aggregation for specific customers.
+The service is built as a Node app using the Express framework, powered by a time series database called QuestDB. It is Dockerized for convenience, using Docker Compose to manage the different containers. A simple route is exposed to allow for event aggregation for specific customers.
 
 ### App Structure and Framework
 
@@ -81,7 +80,7 @@ It is worth noting that in populating the DB we are making certain assumptions a
   - In case our aggregation parameters were **pre-determined**, such as having uniform hourly buckets (ex: 1-2, 2-5, etc.), an approach to speed up our queries would have been to pre-aggregate the data. Assuming 24 time buckets per day, this would mean that we would need to keep track of up to `24 * customer_#` rows of data per day. This could exist in a relational or non relational database. The advantage of this approach is that aggregation could be done very quickly (since the data is pre-aggregated). The disadvantage is that in the case we need time periods in between buckets (which we do) this approach becomes more complicated, and we still need to store the “raw” event data since we can’t rely purely on the aggregates. This approach was therefore discarded.
 
 - Tradional Relational DB (PostgreSQL, MySQL):
-  - We could have ingested the data into a tradional relational DB instead of using a time series database. With the right indexes on the timestamp column, we could still achieve good performance, especially for the relatively small amount of data we have. However, since our use case was specifically to aggregate something over time, the more specialized QuestDB was deemed more appropriate.
+  - We could have ingested the data into a tradional relational DB instead of using a time series database. With the right indexes on the timestamp column, we could still achieve good query performance, especially for the relatively small amount of data we have. However, since our use case was specifically to aggregate something over time, the more specialized QuestDB was deemed more appropriate.
 
 - Third Party Service:
   - A service like Metronome purpose built for something like this could save a lot of development time. In a real production setting, this option would be considered more seriously and evaluated on the cost of the service & implementation vs. the other alternatives considered. For the purposes of this excercise, this option was discarded to build something from the ground-up.
