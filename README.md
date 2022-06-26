@@ -18,6 +18,9 @@ We expect this exercise to take 1-3 hours.
 
 ## Setup
 
+### Pre-reqs
+0. To run this application, please install [docker compose](https://docs.docker.com/compose/install/) if needed.
+
 1. To run this application, simply run `docker-compose up -d`. This will start 3 containers: the QuestDB database, the Node Express server, and a Node process to migrate the events data into the DB (please give it a few seconds to finish populating before sending any http requests!)
 2. To send requests, use `curl` or an API client and the route:
 ```
@@ -25,9 +28,10 @@ http://localhost:3000/v1/customers/{customer_id}/total_events?starting_at={start
 ```
   - Ex curl request:
     ```
-    curl http://localhost:3000/v1/customers/b4f9279a0196e40632e947dd1a88e857/total_events?starting_at='2021-03-01'&ending_before='2021-03-02'
+    curl http://localhost:3000/v1/customers/b4f9279a0196e40632e947dd1a88e857/total_events\?starting_at\='2021-03-01'\&ending_before\='2021-03-02'
     ```
-  - For `start_ts` and `end_ts`, most common timestamp formats are supported. For more precision, the following format is suggested: `yyyy-MM-dd HH:mm:ss` (ex: 2017-08-19 12:17:55)
+  - For `start_ts` and `end_ts`, most common timestamp formats are supported. For more precision, the following format is suggested: `yyyy-MM-dd HH:mm:ss` (ex: 2017-08-19 12:17:55).
+3. If the containers crash for some reason, simply stop the containers and re-run #1.
 
 ## Design Overview
 
@@ -65,7 +69,7 @@ Although a time series database has some great advantages when it comes to optim
 
 - Time series data is sorted by time. Therefore, the database is meant to be used by appending new data. Populating a table with out of order time data (such as the `events.csv`) can therefore be a challenge. To get around this, I had to add a “commit lag” to the `events` table so that the database could re-order events under-the-hood before committing it to persistent memory
 
-A `migrate` command is provided (executed with `npm run migrate`) to populate the database with our `events.csv` data. For convenience, this command is run when the containers are started, but in a real application we would want to separate these processes out.
+A `migrate` command is provided (executed with `npm run migrate`) to populate the database with our `events.csv` data. For convenience, this command is run when the containers are started, but in a real application we would want to separate these processes out. Also for demonstration purposes we aren't persisting any data, so everytime the container is spun down and up we are re-populating the DB from scratch.
 
 It is worth noting that in populating the DB we are making certain assumptions about the data:
 
