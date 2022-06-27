@@ -46,17 +46,17 @@ The main endpoint for this application is:
 
 `GET /v1/customers/{customer_id}/total_events`
 
-The following *optional* parameters are accepted: `starting_at`, and `end_before`. This specific design was selected for a few reasons:
+The following *optional* parameters are accepted: `starting_at`, and `ending_before`. This specific design was selected for a few reasons:
 
-- GET normally suggests viewing something without changing it, and the parameters `starting_at` and `end_before` are optional since the user could choose to request all events in a customers lifetime if those weren’t included. We could consider adding a maximum time range for requesting event aggregation if our data grew too much; though for this dataset this isn’t a constraint we need to enforce yet
+- GET normally suggests viewing something without changing it, and the parameters `starting_at` and `ending_before` are optional since the user could choose to request all events in a customers lifetime if those weren’t included. We could consider adding a maximum time range for requesting event aggregation if our data grew too much; though for this dataset this isn’t a constraint we need to enforce yet
 - `/total_events` could have been called something like `usage`, and specifies that this is an aggregate we’re returning and not a list of events
 - `v1` is included to give us the flexibility of adding new versions to our application in the future if we needed to. In a real application, we’d structure the routers to include/use the version a bit differently than in this sample app.
 - Very basic error handling is implemented for routes that don’t exist, and any errors we might run into on the `/customers` route. In production these would be more sophisticated.
-- No validation was added to the parameters `customer_id`, `starting_at`, and `end_before` due to time constraints. On a real application, we’d have middleware performing schema validation for these fields to provide friendlier error messages and avoid unintended behavior in our application.
+- No validation was added to the parameters `customer_id`, `starting_at`, and `ending_before` due to time constraints. On a real application, we’d have middleware performing schema validation for these fields to provide friendlier error messages and avoid unintended behavior in our application.
 
 **Alternatives Considered**
 
-If we were designing a more generic aggregator, we could make an `/events` path that takes in aggregates for certain metrics, like customers (ex: `/events/customers/{id}/total_events`) or event type (`ex: /events/types/{type}/total_events`). Since in this case we are assuming we will only have one type of event, our only variable metric over time is the customer. Therefore, a more specific route for `/customers` was chosen.
+If we were designing a more generic aggregator, we could make an `/events` path that returns aggregates for certain metrics, like customers (ex: `/events/customers/{id}/total_events`) or event type (`ex: /events/types/{type}/total_events`). Since in this case we are assuming we will only have one type of event, our only variable metric over time is the customer. Therefore, a more specific route for `/customers` was chosen.
 
 Another path we could have taken is to make the aggregation endpoint a `POST` request; in which case we would be passing in our search parameters as the body of the payload. This has some advantages, such as being able to save and surface to the user previous searches made and caching results on the server more easily; but for simplicity, a more striaghtforward `GET` route was chosen.
 
