@@ -13,7 +13,7 @@ router.get('/:id/total_events', async (req, res) => {
 
   const query = {
     name: 'fetch events',
-    text: `SELECT count(*) FROM events WHERE customer_id = $1 AND ts >= to_timestamp($2) AND ts < to_timestamp($3)`,
+    text: `SELECT month(ts) as month, day(ts) as day, hour(timestamp_floor('h', ts)) as hour_start, hour(timestamp_ceil('h', ts)) as hour_end, count() FROM events WHERE customer_id = $1 AND ts >= to_timestamp($2) AND ts < to_timestamp($3)`,
     values: [
       customerId,
       starting_at ? starting_at : '2020-01-01 00:00:00',
@@ -22,15 +22,18 @@ router.get('/:id/total_events', async (req, res) => {
   }
 
   let dbResponse;
+
   try {
     dbResponse = await client.query(query);
+
+    console.log(dbResponse);
   } catch (error) {
     // In production we'd have better error handling
     console.error(error.stack)
     res.status(500).send('Something broke!')
   }
 
-  res.send(dbResponse.rows[0].count);
+  res.json(dbResponse.rows);
 });
 
 module.exports = router;
